@@ -1,751 +1,854 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"  content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#F6F7F5">
-    <title>Quittify</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%233E8168'/%3E%3Cpath d='M50 22c-14 10-22 22-22 35a22 22 0 0 0 44 0c0-13-8-25-22-35z' fill='white'/%3E%3C/svg%3E">
-    <style>
-        *{box-sizing:border-box;}
-        html,body{margin:0;padding:0;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#F4F6F2" id="themeColorMeta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Quittify</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%233E8168'/%3E%3Cpath d='M50 22c-14 10-22 22-22 35a22 22 0 0 0 44 0c0-13-8-25-22-35z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ Design tokens ============ */
+:root{
+  --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+  --radius-lg:22px;
+  --radius-md:14px;
+  --radius-sm:11px;
+}
+:root[data-theme="light"]{
+  --bg:#F4F6F2;
+  --bg-translucent:rgba(244,246,242,0.9);
+  --surface:#FFFFFF;
+  --surface-2:#FAFBF9;
+  --text:#1E2521;
+  --text-soft:#66716B;
+  --text-faint:#9AA49E;
+  --accent:#3E8168;
+  --accent-deep:#2A5A48;
+  --accent-soft:#E7F1EC;
+  --accent-ink:#26503F;
+  --border:#E3E8E2;
+  --danger:#C1443B;
+  --danger-active:#A3372F;
+  --shadow-card:0 1px 2px rgba(30,37,33,0.05),0 2px 10px rgba(30,37,33,0.06);
+  --shadow-fab:0 8px 20px rgba(62,129,104,0.38);
+  --overlay:rgba(18,22,20,0.45);
+  --card-ink:#1A211D;
+  --card-ink-soft:rgba(26,33,29,0.58);
+  --card-chip:rgba(255,255,255,0.62);
+  --card-chip-strong:rgba(255,255,255,0.9);
+  --card-track:rgba(26,33,29,0.1);
+  --c-sage:#DCEBE2; --c-sky:#DCEAF7; --c-blush:#F7E1E6; --c-sand:#F5EBD8;
+  --c-lilac:#E7E0F5; --c-peach:#F7E4D6; --c-mist:#DFF0EE; --c-stone:#EAEAE6;
+}
+:root[data-theme="dark"]{
+  --bg:#111815;
+  --bg-translucent:rgba(17,24,21,0.88);
+  --surface:#1B2420;
+  --surface-2:#212B26;
+  --text:#E8EDE9;
+  --text-soft:#93A099;
+  --text-faint:#68746E;
+  --accent:#5FB08F;
+  --accent-deep:#7BC4A6;
+  --accent-soft:#20332B;
+  --accent-ink:#A9D8C4;
+  --border:#2A352F;
+  --danger:#E06A60;
+  --danger-active:#C9564D;
+  --shadow-card:0 1px 2px rgba(0,0,0,0.25),0 3px 12px rgba(0,0,0,0.28);
+  --shadow-fab:0 8px 20px rgba(0,0,0,0.45);
+  --overlay:rgba(0,0,0,0.58);
+  --card-ink:#EAF0EC;
+  --card-ink-soft:rgba(234,240,236,0.6);
+  --card-chip:rgba(255,255,255,0.07);
+  --card-chip-strong:rgba(255,255,255,0.12);
+  --card-track:rgba(234,240,236,0.14);
+  --c-sage:#24382F; --c-sky:#223345; --c-blush:#3D2830; --c-sand:#3A3124;
+  --c-lilac:#2E2940; --c-peach:#3B2D22; --c-mist:#1F3634; --c-stone:#2C2E2A;
+}
 
-        body {
-            background-color: #F6F7F5;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #20262B;
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: contain;
-        }
-        button, input{font-family:inherit;}
-        .hidden{display:none !important;}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  font-family:var(--font-ui);
+  color:var(--text);
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:contain;
+  transition:background .25s ease,color .25s ease;
+}
+button,input,select{font-family:inherit;}
+.hidden{display:none !important;}
 
-        #app {
-            max-width: 460px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: #F6F7F5;
-            position: relative;
-            padding-bottom: 120px;
-        }
+#app{
+  max-width:460px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+  padding-bottom:120px;
+}
 
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding:calc(16px + env(safe-area-inset-top)) 20px 14px;
-            background: rgba(246, 247, 245, 0.92);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #E7E9E7;
-        }
-        .brand {
-            display:flex;
-            align-items:center;
-            gap:9px;
-        }
-        .brand-mark {
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
-            background: #3E8168;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .brand h1 {
-            font-size: 18px;
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: -0.2px;
-            color: #20262B;
-        }
-        .icon-btn {
-            background: none;
-            border: none;
-            font-size: 19px;
-            cursor: pointer;
-            color: #6B7580;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .icon-btn:active {
-            background: #E7E9E7;
-        }
+/* ============ Header ============ */
+.app-header{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(16px + env(safe-area-inset-top)) 20px 14px;
+  background:var(--bg-translucent);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:9px;}
+.brand-mark{
+  width:32px;height:32px;border-radius:9px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;
+}
+.brand h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-0.3px;color:var(--text);}
+.header-actions{display:flex;gap:4px;}
+.icon-btn{
+  background:none;border:none;cursor:pointer;color:var(--text-soft);
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;padding:0;
+}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.icon-btn:active{background:var(--border);}
 
-        .notif-banner {
-            margin: 14px 16px 0;
-            background: #E9F3EE;
-            border-radius: 16px;
-            padding: 13px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .notif-banner p {
-            margin: 0;
-            font-size: 12.5px;
-            color: #26503F;
-            line-height: 1.4;
-            flex: 1;
-        }
-        .notif-banner-actions {
-            display:flex;
-            gap:6px;
-            flex-shrink:0;
-        }
-        .btn-sm {
-            border: none;
-            border-radius: 9px;
-            padding: 7px 11px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .btn-sm.primary {
-            background: #3E8168;
-            color:#fff;
-        }
-        .btn-sm.text {
-            background:transparent;
-            color: #6B7580;
-        }
+/* ============ Notification banner ============ */
+.notif-banner{
+  margin:14px 16px 0;background:var(--accent-soft);border-radius:16px;
+  padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.notif-banner p{margin:0;font-size:12.5px;color:var(--accent-ink);line-height:1.4;flex:1;}
+.notif-banner-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn-sm{border:none;border-radius:9px;padding:7px 11px;font-size:12px;font-weight:700;cursor:pointer;}
+.btn-sm.primary{background:var(--accent);color:#fff;}
+.btn-sm.text{background:transparent;color:var(--text-soft);}
 
-        .quote-card {
-            margin: 16px;
-            padding: 22px 22px 18px;
-            background: #d9d9d9;
-            border-radius: 22px;
-            box-shadow: 0 1px 2px rgba(32,38,43,0.05), 0 1px 6px rgba(32,38,43,0.06);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #E7E9E7;
-        }
-        .quote-mark {
-            font-family: Arial, Helvetica, sans-serif;
-            font-style: italic;
-            color: #3E8168;
-            opacity: 0.16;
-            position: absolute;
-            top: -6px;
-            left: 14px;
-            line-height: 1;
-        }
-        .quote-eyebrow {
-            font-size: 10.5px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #9AA3AB;
-            margin: 0 0 8px;
-            position: relative;
-        }
-        .quote-text {
-            font-family: Arial, Helvetica, sans-serif;
-            font-style: italic;
-            font-size: 16px;
-            line-height: 1.55;
-            color: #20262B;
-            margin: 0 0 10px;
-            position: relative;
-        }
-        .quote-author {
-            font-size: 12px;
-            font-weight: 700;
-            color: #6B7580;
-            margin: 0;
-            text-align: right;
-        }
+/* ============ Quote card ============ */
+.quote-card{
+  margin:16px;padding:24px 22px 18px;
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  position:relative;overflow:hidden;
+  border:1px solid var(--border);
+}
+.quote-card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,var(--accent),transparent 90%);
+  border-radius:4px;
+}
+.quote-mark{
+  font-family:var(--font-display);font-style:italic;color:var(--accent);
+  opacity:0.14;position:absolute;top:-18px;right:8px;line-height:1;font-size:120px;
+  pointer-events:none;
+}
+.quote-eyebrow{
+  font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--text-faint);margin:0 0 10px;position:relative;
+}
+.quote-text{
+  font-family:var(--font-display);font-style:italic;font-weight:450;
+  font-size:18px;line-height:1.5;color:var(--text);margin:0 0 10px;position:relative;
+  letter-spacing:0.1px;
+}
+.quote-author{font-size:12px;font-weight:600;color:var(--text-soft);margin:0;text-align:right;position:relative;}
 
-        .cards-grid { 
-            padding:2px 16px 8px;
-            display:flex;
-            flex-direction:column;
-            gap:14px;
-        }
-        .tracker-card {
-            border-radius:22px;
-            padding:18px 18px 16px;
-            box-shadow:0 1px 2px rgba(32,38,43,0.05), 0 1px 6px rgba(32,38,43,0.06);
-            position:relative;
-            cursor:pointer;
-            transition:transform .12s ease;
-            border:1px solid rgba(32,38,43,0.05);
-        }
-        .tracker-card:active {
-            transform:scale(0.982);
-        }
-        .card-top { 
-            display:flex;
-            align-items:flex-start;
-            justify-content:space-between;
-            margin-bottom:16px;
-        }
-        .card-title-wrap {
-            display:flex;
-            align-items:center;
-            gap:11px;
-            min-width:0;
-        }
-        .card-icon {
-            font-size:22px;
-            width:44px; 
-            height:44px;
-            background:rgba(255,255,255,0.65);
-            border-radius:13px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-shrink:0;
-        }
-        .card-text {
-            min-width:0;
-        }
-        .card-name {
-            font-size:15.5px;
-            font-weight:700;
-            color:#1A1F23;
-            margin:0;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-        }
-        .card-since {
-            font-size:11px;
-            color:rgba(26,31,35,0.55);
-            margin:2px 0 0;
-        }
-        .kebab-btn {
-            background:rgba(255,255,255,0.6);
-            border:none;
-            width:30px;
-            height:30px;
-            border-radius:50%;
-            font-size:16px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#333;
-            flex-shrink:0;
-            line-height:1;
-            padding:0;
-        }
-        .kebab-btn:active {
-            background:rgba(255,255,255,0.9);
-        }
+/* ============ Summary strip ============ */
+.summary-strip{
+  margin:0 16px 2px;display:flex;align-items:baseline;gap:6px;
+  padding:2px 6px 10px;
+}
+.summary-num{
+  font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--accent-deep);
+  font-variant-numeric:tabular-nums;letter-spacing:-0.5px;
+}
+.summary-label{font-size:12.5px;color:var(--text-soft);font-weight:500;}
 
-        .stats-row {
-            display:grid;
-            grid-template-columns:repeat(4,1fr);
-            gap:7px;}
-        .stat-box {
-            background:rgba(255,255,255,0.6);
-            border-radius:11px;
-            padding:9px 4px;
-            text-align:center;
-        }
-        .stat-num {
-            font-size:19px;
-            font-weight:800;
-            color:#171B1E;
-            display:block;
-            font-variant-numeric:tabular-nums;
-            letter-spacing:-0.3px;
-        }
-        .stat-label {
-            font-size:9px;
-            text-transform:uppercase;
-            letter-spacing:0.5px;
-            color:rgba(23,27,30,0.55);
-            font-weight:600;
-        }
- 
-        .empty-state {
-            text-align:center;
-            padding:76px 34px 30px;
-        }
-        .empty-icon {
-            font-size:40px;
-            margin-bottom:14px;
-            opacity:0.85;
-        }
-        .empty-title {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size:27px;
-            font-weight:400;
-            font-style:italic;
-            color:#26503F;
-            line-height:1.35;
-            margin:0 0 12px;
-            letter-spacing:-0.2px;
-        }
-        .empty-sub {
-            color:#6B7580;
-            font-size:13.5px;
-            line-height:1.6;
-            margin:0;
-            max-width:260px;
-            margin:0 auto;
-        }
- 
- 
-        .fab-wrap {
-            position:fixed;
-            bottom:0;
-            left:50%;
-            width:100%;
-            max-width:460px;
-            transform:translateX(-50%);
-            pointer-events:none;
-            display:flex;
-            justify-content:flex-end;
-            padding:0 22px calc(26px + env(safe-area-inset-bottom));
-            box-sizing:border-box;
-            z-index:30;
-        }
-        .fab {
-            pointer-events:all;
-            width:56px;
-            height:56px;
-            border-radius:50%;
-            background:#3E8168;
-            color:#fff;
-            font-size:28px;
-            border:none;
-            box-shadow:0 8px 20px rgba(62,129,104,0.38);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            cursor:pointer;
-            font-weight:300;
-        }
-        .fab:active {
-            transform:scale(0.93);
-        }
- 
-  
-        .modal-overlay {
-            position:fixed;
-            inset:0;
-            background:rgba(20,24,22,0.48);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:200;
-            padding:22px;
-            box-sizing:border-box;
-        }
-        .modal {
-            background:#fff;
-            width:100%;
-            max-width:380px;
-            border-radius:22px;
-            padding:24px 22px;
-            box-sizing:border-box;
-            max-height:88vh;
-            overflow-y:auto;
-        }
-        .modal h2 {
-            margin:0 0 4px;
-            font-size:18px;
-            font-weight:700;
-        }
-        .modal-hint {
-            font-size:12.5px;
-            color:#9AA3AB;
-            margin:0 0 6px;
-        }
-        .modal label {
-            display:block;
-            font-size:11.5px;
-            font-weight:700;
-            color:#6B7580;
-            margin:16px 0 7px;
-            text-transform:uppercase;
-            letter-spacing:0.4px;
-        }
-        .modal input[type=text], .modal input[type=datetime-local] {
-            width:100%;
-            box-sizing:border-box;
-            padding:12px 13px;
-            border-radius:12px;
-            border:1.5px solid #E7E9E7;
-            font-size:15px;
-            background:#FAFBFA;
-            color:#20262B;
-        }
-        .modal input:focus {
-            outline:none;
-            border-color:#3E8168;
-        }
- 
-        .swatch-row {
-            display:flex;
-            flex-wrap:wrap;
-            gap:11px;
-        }
-        .swatch {
-            width:36px;
-            height:36px;
-            border-radius:50%;
-            border:2.5px solid transparent;
-            cursor:pointer;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:14px;
-            color:#2b2b2b;
-            font-weight:700;
-            box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05);
-        }
-        .swatch.selected {
-            border-color:#2b2b2b;
-        }
- 
-        .icon-grid {
-            display:grid;
-            grid-template-columns:repeat(6,1fr);
-            gap:8px;
-        }
-        .icon-opt {
-            aspect-ratio:1;
-            border-radius:12px;
-            border:1.5px solid #E7E9E7;
-            background:#FAFBFA;
-            font-size:19px;
-            display:flex;
-            align-items:center; 
-            justify-content:center;
-            cursor:pointer;
-        }
-        .icon-opt.selected {
-            border-color:#3E8168;
-            background:#E9F3EE;
-        }
- 
-        .modal-actions {
-            display:flex;
-            gap:10px;
-            margin-top:24px;
-        }
-        .btn-primary, .btn-secondary, .btn-danger {
-            flex:1;
-            padding:13px;
-            border-radius:14px;
-            border:none;
-            font-size:14.5px;
-            font-weight:700;
-            cursor:pointer;
-        }
-        .btn-primary {
-            background:#3E8168;
-            color:#fff;
-        }
-        .btn-primary:active {
-            background:#26503F;
-        }
-        .btn-secondary {
-            background:#F0F1EF;
-            color:#20262B;
-        }
-        .btn-secondary:active {
-            background:#e5e6e3;
-        }
-        .btn-danger {
-            background:#C1443B;
-            color:#fff;
-        }
-        .btn-danger:active {
-            background:#a3372f;
-        }
- 
-        .modal-sm {
-            text-align:center;
-        }
-        .modal-sm h2 {
-            font-size:17px;
-        }
-        .modal-sm p {
-            font-size:14px; 
-            color:#6B7580;
-            line-height:1.55;
-            margin:10px 0 0;
-        }
-        .modal-sm .card-name-highlight {
-            font-weight:700;
-            color:#20262B;
-        }
- 
-  
-        .sheet-overlay {
-            position:fixed;
-            inset:0;
-            background:rgba(20,24,22,0.42);
-            z-index:200;
-            display:flex;
-            align-items:flex-end; 
-            justify-content:center;
-        }
-        .sheet {
-            background:#fff;
-            width:100%; 
-            max-width:460px; 
-            border-radius:22px 22px 0 0;
-            padding:8px 12px calc(20px + env(safe-area-inset-bottom));
-        }
-        .sheet-handle {
-            width:36px; 
-            height:4px; 
-            background:#E7E9E7; 
-            border-radius:2px; 
-            margin:8px auto 12px;
-        }
-        .sheet-btn {
-            width:100%; 
-            text-align:left; 
-            padding:14px 12px; 
-            border:none; 
-            background:none;
-            font-size:15px; 
-            border-radius:12px; 
-            display:flex; 
-            align-items:center; 
-            gap:11px;
-            color:#20262B; 
-            font-weight:600;
-        }
-        .sheet-btn:active {
-            background:#F5F6F4;
-        }
-        .sheet-btn.danger {
-            color:#C1443B;
-        }
-        .sheet-btn.cancel {
-            color:#9AA3AB; 
-            justify-content:center; 
-            margin-top:2px; 
-            font-weight:700;
-        }
+/* ============ Tracker cards ============ */
+.cards-grid{padding:2px 16px 8px;display:flex;flex-direction:column;gap:14px;}
+.tracker-card{
+  border-radius:var(--radius-lg);padding:18px 18px 16px;
+  box-shadow:var(--shadow-card);position:relative;cursor:pointer;
+  transition:transform .12s ease;
+  border:1px solid var(--border);
+  color:var(--card-ink);
+}
+.tracker-card:active{transform:scale(0.982);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:15px;}
+.card-title-wrap{display:flex;align-items:center;gap:11px;min-width:0;}
+.card-icon{
+  font-size:22px;width:44px;height:44px;background:var(--card-chip);
+  border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.card-text{min-width:0;}
+.card-name{
+  font-size:15.5px;font-weight:700;color:var(--card-ink);margin:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-since{font-size:11px;color:var(--card-ink-soft);margin:2px 0 0;}
+.kebab-btn{
+  background:var(--card-chip);border:none;width:30px;height:30px;border-radius:50%;
+  font-size:16px;display:flex;align-items:center;justify-content:center;
+  color:var(--card-ink);flex-shrink:0;line-height:1;padding:0;cursor:pointer;
+}
+.kebab-btn:active{background:var(--card-chip-strong);}
 
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.stat-box{background:var(--card-chip);border-radius:var(--radius-sm);padding:9px 4px;text-align:center;}
+.stat-num{
+  font-size:19px;font-weight:800;color:var(--card-ink);display:block;
+  font-variant-numeric:tabular-nums;letter-spacing:-0.3px;
+}
+.stat-label{
+  font-size:9px;text-transform:uppercase;letter-spacing:0.5px;
+  color:var(--card-ink-soft);font-weight:600;
+}
 
-        .toast {
-            position:fixed;
-            bottom:104px;
-            left:50%;
-            transform:translateX(-50%);
-            background:#20262B;
-            color:#fff;
-            padding:12px 18px;
-            border-radius:13px;
-            font-size:13px;
-            z-index:300;
-            box-shadow:0 6px 20px rgba(0,0,0,0.25);
-            opacity:0;
-            transition:opacity .25s ease,transform .25s ease;
-            max-width:82%;
-            text-align:center;
-            line-height:1.4;
-            pointer-events:none;
-        }
-        .toast.show {
-            opacity:1;
-            transform:translateX(-50%) translateY(-4px);
-        }
+.card-progress{margin-top:13px;}
+.progress-track{height:5px;border-radius:3px;background:var(--card-track);overflow:hidden;}
+.progress-fill{
+  height:100%;border-radius:3px;background:var(--card-ink);opacity:0.75;
+  transition:width .6s ease;min-width:2px;
+}
+.progress-caption{
+  display:flex;justify-content:space-between;gap:8px;
+  font-size:10.5px;color:var(--card-ink-soft);font-weight:600;margin-top:6px;
+}
+.card-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.card-badge{
+  background:var(--card-chip);border-radius:8px;padding:4px 9px;
+  font-size:11px;font-weight:700;color:var(--card-ink);
+  display:inline-flex;align-items:center;gap:4px;
+}
+.card-badge .soft{font-weight:500;color:var(--card-ink-soft);}
 
+/* ============ Empty state ============ */
+.empty-state{text-align:center;padding:70px 34px 30px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.9;}
+.empty-title{
+  font-family:var(--font-display);font-size:28px;font-weight:500;font-style:italic;
+  color:var(--accent-ink);line-height:1.3;margin:0 0 12px;letter-spacing:-0.2px;
+}
+.empty-sub{color:var(--text-soft);font-size:13.5px;line-height:1.6;max-width:260px;margin:0 auto;}
 
-        @media (prefers-reduced-motion: reduce) {*{transition: none !important;}}
-    </style>
+/* ============ FAB ============ */
+.fab-wrap{
+  position:fixed;bottom:0;left:50%;width:100%;max-width:460px;
+  transform:translateX(-50%);pointer-events:none;
+  display:flex;justify-content:flex-end;
+  padding:0 22px calc(26px + env(safe-area-inset-bottom));z-index:30;
+}
+.fab{
+  pointer-events:all;width:56px;height:56px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:28px;border:none;
+  box-shadow:var(--shadow-fab);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:300;
+}
+.fab:active{transform:scale(0.93);}
+
+/* ============ Modals ============ */
+.modal-overlay{
+  position:fixed;inset:0;background:var(--overlay);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:22px;
+}
+.modal{
+  background:var(--surface);width:100%;max-width:380px;border-radius:var(--radius-lg);
+  padding:24px 22px;max-height:88vh;overflow-y:auto;
+  border:1px solid var(--border);
+}
+.modal h2{margin:0 0 4px;font-size:18px;font-weight:700;color:var(--text);}
+.modal-hint{font-size:12.5px;color:var(--text-faint);margin:0 0 6px;}
+.modal label{
+  display:block;font-size:11.5px;font-weight:700;color:var(--text-soft);
+  margin:16px 0 7px;text-transform:uppercase;letter-spacing:0.4px;
+}
+.field-hint{font-size:11px;color:var(--text-faint);margin:5px 0 0;}
+.modal input[type=text],.modal input[type=number],.modal input[type=datetime-local]{
+  width:100%;padding:12px 13px;border-radius:12px;
+  border:1.5px solid var(--border);font-size:15px;
+  background:var(--surface-2);color:var(--text);
+}
+.modal input:focus{outline:none;border-color:var(--accent);}
+.modal input::placeholder{color:var(--text-faint);}
+input[type=datetime-local]{color-scheme:light;}
+:root[data-theme="dark"] input[type=datetime-local]{color-scheme:dark;}
+
+.swatch-row{display:flex;flex-wrap:wrap;gap:11px;}
+.swatch{
+  width:36px;height:36px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  color:var(--card-ink);font-weight:700;
+  box-shadow:inset 0 0 0 1px rgba(127,127,127,0.18);
+}
+.swatch.selected{border-color:var(--text);}
+
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.icon-opt{
+  aspect-ratio:1;border-radius:12px;border:1.5px solid var(--border);
+  background:var(--surface-2);font-size:19px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.icon-opt.selected{border-color:var(--accent);background:var(--accent-soft);}
+
+.modal-actions{display:flex;gap:10px;margin-top:24px;}
+.btn-primary,.btn-secondary,.btn-danger{
+  flex:1;padding:13px;border-radius:var(--radius-md);border:none;
+  font-size:14.5px;font-weight:700;cursor:pointer;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:active{background:var(--accent-deep);color:var(--surface);}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:active{background:var(--border);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:active{background:var(--danger-active);}
+
+.modal-sm{text-align:center;}
+.modal-sm h2{font-size:17px;}
+.modal-sm p{font-size:14px;color:var(--text-soft);line-height:1.55;margin:10px 0 0;}
+.modal-sm .card-name-highlight{font-weight:700;color:var(--text);}
+
+/* ============ Stats modal ============ */
+.stats-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;text-align:left;}
+.stats-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:12px 14px;
+}
+.stats-item .k{font-size:12.5px;font-weight:600;color:var(--text-soft);}
+.stats-item .v{font-size:14px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;}
+.mstone-list{margin-top:8px;display:flex;flex-wrap:wrap;gap:7px;text-align:left;}
+.mstone{
+  font-size:11.5px;font-weight:700;border-radius:9px;padding:6px 10px;
+  border:1px solid var(--border);color:var(--text-faint);background:var(--surface-2);
+}
+.mstone.done{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent;}
+
+/* ============ Bottom sheets ============ */
+.sheet-overlay{
+  position:fixed;inset:0;background:var(--overlay);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.sheet{
+  background:var(--surface);width:100%;max-width:460px;
+  border-radius:22px 22px 0 0;
+  padding:8px 16px calc(20px + env(safe-area-inset-bottom));
+  border:1px solid var(--border);border-bottom:none;
+  max-height:86vh;overflow-y:auto;
+}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:8px auto 12px;}
+.sheet-btn{
+  width:100%;text-align:left;padding:14px 12px;border:none;background:none;
+  font-size:15px;border-radius:12px;display:flex;align-items:center;gap:11px;
+  color:var(--text);font-weight:600;cursor:pointer;
+}
+.sheet-btn:active{background:var(--surface-2);}
+.sheet-btn.danger{color:var(--danger);}
+.sheet-btn.cancel{color:var(--text-faint);justify-content:center;margin-top:2px;font-weight:700;}
+
+/* Settings sheet */
+.sheet h2{margin:2px 4px 2px;font-size:17px;font-weight:800;color:var(--text);}
+.settings-group{margin:16px 4px 0;}
+.settings-label{
+  font-size:11px;font-weight:700;color:var(--text-soft);
+  text-transform:uppercase;letter-spacing:0.6px;margin:0 0 8px;
+}
+.seg{
+  display:flex;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:3px;gap:3px;
+}
+.seg button{
+  flex:1;border:none;background:transparent;padding:9px 6px;border-radius:11px;
+  font-size:13px;font-weight:700;color:var(--text-soft);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.seg button.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-card);}
+.settings-actions{display:flex;flex-direction:column;gap:2px;margin-top:6px;}
+.sheet-footer-note{font-size:10.5px;color:var(--text-faint);text-align:center;margin:14px 0 0;}
+
+/* ============ Toast ============ */
+.toast{
+  position:fixed;bottom:104px;left:50%;transform:translateX(-50%);
+  background:var(--text);color:var(--bg);
+  padding:12px 18px;border-radius:13px;font-size:13px;z-index:300;
+  box-shadow:0 6px 20px rgba(0,0,0,0.25);opacity:0;
+  transition:opacity .25s ease,transform .25s ease;
+  max-width:82%;text-align:center;line-height:1.4;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+/* ============ Confetti ============ */
+.confetti{
+  position:fixed;top:-12px;width:9px;height:14px;z-index:400;
+  pointer-events:none;border-radius:2px;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  to{transform:translateY(105vh) rotate(720deg);opacity:0.6;}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important;}
+}
+</style>
 </head>
 <body>
 <div id="app">
- 
+
   <header class="app-header">
     <div class="brand">
       <div class="brand-mark">☀︎</div>
       <h1>Quittify</h1>
     </div>
-    <button class="icon-btn" id="headerNotifBtn" aria-label="Notification settings">🔔</button>
+    <div class="header-actions">
+      <button class="icon-btn" id="headerNotifBtn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      </button>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.01a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+      </button>
+    </div>
   </header>
- 
+
   <div id="notifBanner" class="notif-banner hidden">
-    <p>Turn on notifications to celebrate your milestones</p>
+    <p data-i18n="notifMsg"></p>
     <div class="notif-banner-actions">
-      <button id="enableNotifBtn" class="btn-sm primary">Enable</button>
-      <button id="dismissNotifBtn" class="btn-sm text">Not now</button>
+      <button id="enableNotifBtn" class="btn-sm primary" data-i18n="enable"></button>
+      <button id="dismissNotifBtn" class="btn-sm text" data-i18n="notNow"></button>
     </div>
   </div>
- 
+
   <section class="quote-card">
-    <div class="quote-mark">“</div>
-    <p class="quote-eyebrow">Today's reminder</p>
+    <div class="quote-mark">”</div>
+    <p class="quote-eyebrow" data-i18n="todaysReminder"></p>
     <p class="quote-text" id="quoteText"></p>
     <p class="quote-author" id="quoteAuthor"></p>
   </section>
- 
+
+  <div id="summaryStrip" class="summary-strip hidden">
+    <span class="summary-num" id="summaryDays">0</span>
+    <span class="summary-label" id="summaryLabel"></span>
+  </div>
+
   <main id="cardsContainer" class="cards-grid"></main>
- 
+
   <div id="emptyState" class="empty-state hidden">
     <div class="empty-icon">🌱</div>
-    <h2 class="empty-title">Get rid of<br>your addictions</h2>
-    <p class="empty-sub">Tap the + button below to start tracking your first day of freedom.</p>
+    <h2 class="empty-title" id="emptyTitle"></h2>
+    <p class="empty-sub" data-i18n="emptySub"></p>
   </div>
- 
+
   <div class="fab-wrap">
     <button id="addCardBtn" class="fab" aria-label="Add new tracker">+</button>
   </div>
 </div>
+
+<!-- Add / Edit modal -->
 <div id="cardModal" class="modal-overlay hidden">
   <div class="modal">
-    <h2 id="modalTitle">New Tracker</h2>
-    <p class="modal-hint">Fill in the details below</p>
- 
-    <label for="cardNameInput">What are you quitting?</label>
-    <input type="text" id="cardNameInput" maxlength="28" placeholder="e.g. Smoking">
- 
-    <label for="cardDateInput">Last time you used it</label>
+    <h2 id="modalTitle"></h2>
+    <p class="modal-hint" data-i18n="fillDetails"></p>
+
+    <label for="cardNameInput" data-i18n="whatQuitting"></label>
+    <input type="text" id="cardNameInput" maxlength="28">
+
+    <label for="cardDateInput" data-i18n="lastTime"></label>
     <input type="datetime-local" id="cardDateInput">
- 
-    <label>Choose a color</label>
+
+    <label for="cardCostInput" data-i18n="dailyCost"></label>
+    <input type="number" id="cardCostInput" min="0" step="0.5" inputmode="decimal" placeholder="0">
+    <p class="field-hint" data-i18n="dailyCostHint"></p>
+
+    <label data-i18n="chooseColor"></label>
     <div class="swatch-row" id="colorSwatches"></div>
- 
-    <label>Choose an icon</label>
+
+    <label data-i18n="chooseIcon"></label>
     <div class="icon-grid" id="iconGrid"></div>
- 
+
     <div class="modal-actions">
-      <button id="cancelCardBtn" class="btn-secondary">Cancel</button>
-      <button id="saveCardBtn" class="btn-primary">Save</button>
+      <button id="cancelCardBtn" class="btn-secondary" data-i18n="cancel"></button>
+      <button id="saveCardBtn" class="btn-primary" data-i18n="save"></button>
     </div>
   </div>
 </div>
- 
+
+<!-- Relapse check-in -->
 <div id="relapseModal" class="modal-overlay hidden">
   <div class="modal modal-sm">
-    <h2>Be honest with yourself</h2>
-    <p>Did you use <span class="card-name-highlight" id="relapseCardName"></span> again?</p>
+    <h2 data-i18n="beHonest"></h2>
+    <p id="relapseQuestion"></p>
     <div class="modal-actions">
-      <button id="relapseNoBtn" class="btn-secondary">No, still clean</button>
-      <button id="relapseYesBtn" class="btn-danger">Yes, I relapsed</button>
+      <button id="relapseNoBtn" class="btn-secondary" data-i18n="noClean"></button>
+      <button id="relapseYesBtn" class="btn-danger" data-i18n="yesRelapsed"></button>
     </div>
   </div>
 </div>
- 
+
+<!-- Card menu sheet -->
 <div id="cardMenuSheetOverlay" class="sheet-overlay hidden">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <button class="sheet-btn" id="editCardBtn">✏️  Edit tracker</button>
-    <button class="sheet-btn danger" id="deleteCardBtn">🗑️  Delete tracker</button>
-    <button class="sheet-btn cancel" id="cancelMenuBtn">Cancel</button>
+    <button class="sheet-btn" id="statsCardBtn">📊 <span data-i18n="viewStats"></span></button>
+    <button class="sheet-btn" id="editCardBtn">✏️ <span data-i18n="editAction"></span></button>
+    <button class="sheet-btn danger" id="deleteCardBtn">🗑️ <span data-i18n="deleteAction"></span></button>
+    <button class="sheet-btn cancel" id="cancelMenuBtn" data-i18n="cancel"></button>
   </div>
 </div>
- 
+
+<!-- Stats modal -->
+<div id="statsModal" class="modal-overlay hidden">
+  <div class="modal modal-sm">
+    <h2 id="statsTitle"></h2>
+    <div class="stats-list">
+      <div class="stats-item"><span class="k" data-i18n="currentStreak"></span><span class="v" id="statCurrent"></span></div>
+      <div class="stats-item"><span class="k" data-i18n="bestStreak"></span><span class="v" id="statBest"></span></div>
+      <div class="stats-item"><span class="k" data-i18n="relapsesLabel"></span><span class="v" id="statRelapses"></span></div>
+      <div class="stats-item" id="statSavedRow"><span class="k" data-i18n="moneySaved"></span><span class="v" id="statSaved"></span></div>
+    </div>
+    <label style="text-align:left;" data-i18n="milestonesLabel"></label>
+    <div class="mstone-list" id="statMilestones"></div>
+    <div class="modal-actions">
+      <button id="statsCloseBtn" class="btn-secondary" data-i18n="close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
 <div id="deleteConfirmModal" class="modal-overlay hidden">
   <div class="modal modal-sm">
-    <h2>Delete tracker?</h2>
-    <p>This will permanently remove <span class="card-name-highlight" id="deleteCardName"></span> and all of its progress. This can't be undone.</p>
+    <h2 data-i18n="deleteQ"></h2>
+    <p id="deleteMsg"></p>
     <div class="modal-actions">
-      <button id="deleteCancelBtn" class="btn-secondary">Cancel</button>
-      <button id="deleteConfirmBtn" class="btn-danger">Delete</button>
+      <button id="deleteCancelBtn" class="btn-secondary" data-i18n="cancel"></button>
+      <button id="deleteConfirmBtn" class="btn-danger" data-i18n="deleteBtn"></button>
     </div>
+  </div>
+</div>
+
+<!-- Reset confirm -->
+<div id="resetConfirmModal" class="modal-overlay hidden">
+  <div class="modal modal-sm">
+    <h2 data-i18n="resetQ"></h2>
+    <p data-i18n="resetMsg"></p>
+    <div class="modal-actions">
+      <button id="resetCancelBtn" class="btn-secondary" data-i18n="cancel"></button>
+      <button id="resetConfirmBtn" class="btn-danger" data-i18n="resetBtn"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div id="settingsSheetOverlay" class="sheet-overlay hidden">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 data-i18n="settings"></h2>
+
+    <div class="settings-group">
+      <p class="settings-label" data-i18n="appearance"></p>
+      <div class="seg" id="themeSeg">
+        <button data-theme-opt="auto" data-i18n="themeAuto"></button>
+        <button data-theme-opt="light" data-i18n="themeLight"></button>
+        <button data-theme-opt="dark" data-i18n="themeDark"></button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <p class="settings-label" data-i18n="language"></p>
+      <div class="seg" id="langSeg">
+        <button data-lang-opt="en">English</button>
+        <button data-lang-opt="tr">Türkçe</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <p class="settings-label" data-i18n="currency"></p>
+      <div class="seg" id="currencySeg">
+        <button data-cur-opt="₺">₺</button>
+        <button data-cur-opt="$">$</button>
+        <button data-cur-opt="€">€</button>
+        <button data-cur-opt="£">£</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <p class="settings-label" data-i18n="dataSection"></p>
+      <div class="settings-actions">
+        <button class="sheet-btn" id="exportBtn">📤 <span data-i18n="exportData"></span></button>
+        <button class="sheet-btn" id="importBtn">📥 <span data-i18n="importData"></span></button>
+        <input type="file" id="importFileInput" accept="application/json,.json" class="hidden">
+        <button class="sheet-btn danger" id="resetAllBtn">♻️ <span data-i18n="resetAll"></span></button>
+      </div>
+    </div>
+
+    <button class="sheet-btn cancel" id="closeSettingsBtn" data-i18n="close"></button>
+    <p class="sheet-footer-note">Quittify · <span data-i18n="footerNote"></span></p>
   </div>
 </div>
 
 <script>
 (function(){
   "use strict";
- 
-  /* ---------- Config ---------- */
-  var STORAGE_KEY = 'reclaim_cards_v1';
-  var DISMISS_KEY = 'reclaim_notif_dismissed_v1';
- 
+
+  /* ================= Config ================= */
+  var STORAGE_KEY  = 'reclaim_cards_v1';
+  var DISMISS_KEY  = 'reclaim_notif_dismissed_v1';
+  var SETTINGS_KEY = 'quittify_settings_v1';
+
   var COLORS = [
-    {name:'Sage',   value:'#DCEBE2'},
-    {name:'Sky',    value:'#DCEAF7'},
-    {name:'Blush',  value:'#F7E1E6'},
-    {name:'Sand',   value:'#F5EBD8'},
-    {name:'Lilac',  value:'#E7E0F5'},
-    {name:'Peach',  value:'#F7E4D6'},
-    {name:'Mist',   value:'#DFF0EE'},
-    {name:'Stone',  value:'#EAEAE6'}
+    {key:'sage'},{key:'sky'},{key:'blush'},{key:'sand'},
+    {key:'lilac'},{key:'peach'},{key:'mist'},{key:'stone'}
   ];
- 
+  /* map legacy hex values -> keys (for data saved by the old version) */
+  var LEGACY_COLOR_MAP = {
+    '#DCEBE2':'sage','#DCEAF7':'sky','#F7E1E6':'blush','#F5EBD8':'sand',
+    '#E7E0F5':'lilac','#F7E4D6':'peach','#DFF0EE':'mist','#EAEAE6':'stone'
+  };
+
   var ICONS = ['🚬','🍺','💊','🎰','📱','🎮','🍔','🍬','☕','🔞','🥤','🚫'];
- 
+
   var MILESTONES = [
-    {seconds:3600,        label:'1 Hour'},
-    {seconds:86400,       label:'24 Hours'},
-    {seconds:3*86400,     label:'3 Days'},
-    {seconds:7*86400,     label:'1 Week'},
-    {seconds:14*86400,    label:'2 Weeks'},
-    {seconds:30*86400,    label:'30 Days'},
-    {seconds:60*86400,    label:'60 Days'},
-    {seconds:90*86400,    label:'90 Days'},
-    {seconds:180*86400,   label:'6 Months'},
-    {seconds:365*86400,   label:'1 Year'}
+    {seconds:3600,      key:'m1h'},
+    {seconds:86400,     key:'m24h'},
+    {seconds:3*86400,   key:'m3d'},
+    {seconds:7*86400,   key:'m1w'},
+    {seconds:14*86400,  key:'m2w'},
+    {seconds:30*86400,  key:'m30d'},
+    {seconds:60*86400,  key:'m60d'},
+    {seconds:90*86400,  key:'m90d'},
+    {seconds:180*86400, key:'m6mo'},
+    {seconds:365*86400, key:'m1y'}
   ];
- 
-  var QUOTES = [
-    {text:"The secret of getting ahead is getting started.", author:"Mark Twain"},
-    {text:"It always seems impossible until it's done.", author:"Nelson Mandela"},
-    {text:"Success is not final, failure is not fatal: it is the courage to continue that counts.", author:"Winston Churchill"},
-    {text:"The only way to do great work is to love what you do.", author:"Steve Jobs"},
-    {text:"Hardships often prepare ordinary people for an extraordinary destiny.", author:"C.S. Lewis"},
-    {text:"Believe you can and you're halfway there.", author:"Theodore Roosevelt"},
-    {text:"Discipline is choosing between what you want now and what you want most.", author:"Abraham Lincoln"},
-    {text:"You are never too old to set another goal or dream a new dream.", author:"C.S. Lewis"},
-    {text:"Our greatest glory is not in never falling, but in rising every time we fall.", author:"Confucius"},
-    {text:"The future depends on what you do today.", author:"Mahatma Gandhi"},
-    {text:"I am not a product of my circumstances. I am a product of my decisions.", author:"Stephen Covey"},
-    {text:"Do the hard jobs first. The easy jobs will take care of themselves.", author:"Dale Carnegie"},
-    {text:"Strength does not come from winning. Your struggles develop your strengths.", author:"Arnold Schwarzenegger"},
-    {text:"What lies behind us and before us are tiny matters compared to what lies within us.", author:"Ralph Waldo Emerson"},
-    {text:"Every strike brings me closer to the next home run.", author:"Babe Ruth"},
-    {text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius"},
-    {text:"Perseverance is not a long race; it is many short races one after another.", author:"Walter Elliot"},
-    {text:"Fall seven times, stand up eight.", author:"Japanese Proverb"},
-    {text:"You don't have to be great to start, but you have to start to be great.", author:"Zig Ziglar"},
-    {text:"A year from now you may wish you had started today.", author:"Karen Lamb"},
-    {text:"The comeback is always stronger than the setback.", author:"Unknown"},
-    {text:"Small steps every day lead to big changes.", author:"Unknown"},
-    {text:"Recovery is not one and done, it's a lifelong journey taken one day at a time.", author:"Unknown"},
-    {text:"Difficult roads often lead to beautiful destinations.", author:"Unknown"},
-    {text:"You are stronger than your excuses.", author:"Unknown"}
-  ];
- 
-  /* ---------- State ---------- */
+
+  /* ================= i18n ================= */
+  var I18N = {
+    en: {
+      todaysReminder:"Today's reminder",
+      notifMsg:"Turn on notifications to celebrate your milestones",
+      enable:"Enable", notNow:"Not now",
+      emptyTitle:"Get rid of<br>your addictions",
+      emptySub:"Tap the + button below to start tracking your first day of freedom.",
+      summaryLabel:"days reclaimed in total",
+      newTracker:"New Tracker", editTracker:"Edit Tracker",
+      fillDetails:"Fill in the details below",
+      whatQuitting:"What are you quitting?", quittingPlaceholder:"e.g. Smoking",
+      lastTime:"Last time you used it",
+      dailyCost:"Daily cost (optional)",
+      dailyCostHint:"Used to estimate how much money you've saved.",
+      chooseColor:"Choose a color", chooseIcon:"Choose an icon",
+      cancel:"Cancel", save:"Save", close:"Close",
+      beHonest:"Be honest with yourself",
+      didYouUse:"Did you use {name} again?",
+      noClean:"No, still clean", yesRelapsed:"Yes, I relapsed",
+      viewStats:"View stats", editAction:"Edit tracker", deleteAction:"Delete tracker",
+      deleteQ:"Delete tracker?", deleteBtn:"Delete",
+      deleteMsg:"This will permanently remove {name} and all of its progress. This can't be undone.",
+      resetQ:"Erase everything?", resetBtn:"Erase",
+      resetMsg:"All trackers and their history will be permanently deleted.",
+      days:"Days", hours:"Hours", min:"Min", sec:"Sec",
+      since:"Since {date}",
+      next:"Next: {label}", left:"{time} left",
+      allMilestones:"All milestones reached 🎉",
+      savedChip:"saved",
+      bestChip:"best",
+      settings:"Settings", appearance:"Appearance",
+      themeAuto:"Auto", themeLight:"Light", themeDark:"Dark",
+      language:"Language", currency:"Currency", dataSection:"Your data",
+      exportData:"Export backup", importData:"Import backup", resetAll:"Erase all data",
+      footerNote:"your data stays on this device",
+      currentStreak:"Current streak", bestStreak:"Best streak",
+      relapsesLabel:"Restarts", moneySaved:"Money saved", milestonesLabel:"Milestones",
+      dayShort:"d", hourShort:"h", minShort:"m",
+      toastEnterName:"Please enter a name",
+      toastChooseDate:"Please choose a date & time",
+      toastUpdated:"Tracker updated",
+      toastAdded:"New tracker added — you can do this",
+      toastFreshStart:"It's okay — recovery isn't a straight line. Fresh start, right now.",
+      toastDeleted:"Tracker deleted",
+      toastNotifOn:"Notifications are already on",
+      toastNotifBlocked:"Notifications are blocked in your browser settings",
+      toastNotifUnsupported:"Notifications are not supported here",
+      toastExported:"Backup downloaded",
+      toastImported:"Backup imported",
+      toastImportError:"That file couldn't be read",
+      toastErased:"Everything erased. Clean slate.",
+      milestoneTitle:"🎉 {name} milestone!",
+      milestoneBody:"You reached {label} without {name}. Keep going!",
+      m1h:"1 Hour", m24h:"24 Hours", m3d:"3 Days", m1w:"1 Week", m2w:"2 Weeks",
+      m30d:"30 Days", m60d:"60 Days", m90d:"90 Days", m6mo:"6 Months", m1y:"1 Year"
+    },
+    tr: {
+      todaysReminder:"Günün hatırlatması",
+      notifMsg:"Kilometre taşlarını kutlamak için bildirimleri aç",
+      enable:"Aç", notNow:"Şimdi değil",
+      emptyTitle:"Bağımlılıklarından<br>kurtul",
+      emptySub:"Özgürlüğünün ilk gününü takip etmek için aşağıdaki + düğmesine dokun.",
+      summaryLabel:"gün geri kazanıldı",
+      newTracker:"Yeni Takip", editTracker:"Takibi Düzenle",
+      fillDetails:"Aşağıdaki bilgileri doldur",
+      whatQuitting:"Neyi bırakıyorsun?", quittingPlaceholder:"örn. Sigara",
+      lastTime:"En son ne zaman kullandın?",
+      dailyCost:"Günlük maliyet (isteğe bağlı)",
+      dailyCostHint:"Ne kadar para biriktirdiğini hesaplamak için kullanılır.",
+      chooseColor:"Renk seç", chooseIcon:"Simge seç",
+      cancel:"Vazgeç", save:"Kaydet", close:"Kapat",
+      beHonest:"Kendine karşı dürüst ol",
+      didYouUse:"{name} — tekrar kullandın mı?",
+      noClean:"Hayır, hâlâ temizim", yesRelapsed:"Evet, tekrar kullandım",
+      viewStats:"İstatistikler", editAction:"Takibi düzenle", deleteAction:"Takibi sil",
+      deleteQ:"Takip silinsin mi?", deleteBtn:"Sil",
+      deleteMsg:"{name} ve tüm ilerlemesi kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+      resetQ:"Her şey silinsin mi?", resetBtn:"Sil",
+      resetMsg:"Tüm takipler ve geçmişleri kalıcı olarak silinecek.",
+      days:"Gün", hours:"Saat", min:"Dk", sec:"Sn",
+      since:"Başlangıç: {date}",
+      next:"Sıradaki: {label}", left:"{time} kaldı",
+      allMilestones:"Tüm kilometre taşlarına ulaşıldı 🎉",
+      savedChip:"birikti",
+      bestChip:"rekor",
+      settings:"Ayarlar", appearance:"Görünüm",
+      themeAuto:"Otomatik", themeLight:"Açık", themeDark:"Koyu",
+      language:"Dil", currency:"Para birimi", dataSection:"Verilerin",
+      exportData:"Yedeği dışa aktar", importData:"Yedeği içe aktar", resetAll:"Tüm verileri sil",
+      footerNote:"verilerin bu cihazda kalır",
+      currentStreak:"Mevcut seri", bestStreak:"En iyi seri",
+      relapsesLabel:"Yeniden başlangıç", moneySaved:"Biriken para", milestonesLabel:"Kilometre taşları",
+      dayShort:"g", hourShort:"sa", minShort:"dk",
+      toastEnterName:"Lütfen bir isim gir",
+      toastChooseDate:"Lütfen tarih ve saat seç",
+      toastUpdated:"Takip güncellendi",
+      toastAdded:"Yeni takip eklendi — bunu başarabilirsin",
+      toastFreshStart:"Sorun değil — iyileşme düz bir çizgi değildir. Şu andan itibaren yeni bir başlangıç.",
+      toastDeleted:"Takip silindi",
+      toastNotifOn:"Bildirimler zaten açık",
+      toastNotifBlocked:"Bildirimler tarayıcı ayarlarından engellenmiş",
+      toastNotifUnsupported:"Bildirimler burada desteklenmiyor",
+      toastExported:"Yedek indirildi",
+      toastImported:"Yedek içe aktarıldı",
+      toastImportError:"Bu dosya okunamadı",
+      toastErased:"Her şey silindi. Temiz bir sayfa.",
+      milestoneTitle:"🎉 {name} kilometre taşı!",
+      milestoneBody:"{name} olmadan {label} geçirdin. Böyle devam!",
+      m1h:"1 Saat", m24h:"24 Saat", m3d:"3 Gün", m1w:"1 Hafta", m2w:"2 Hafta",
+      m30d:"30 Gün", m60d:"60 Gün", m90d:"90 Gün", m6mo:"6 Ay", m1y:"1 Yıl"
+    }
+  };
+
+  var QUOTES = {
+    en: [
+      {text:"The secret of getting ahead is getting started.", author:"Mark Twain"},
+      {text:"It always seems impossible until it's done.", author:"Nelson Mandela"},
+      {text:"Success is not final, failure is not fatal: it is the courage to continue that counts.", author:"Winston Churchill"},
+      {text:"Hardships often prepare ordinary people for an extraordinary destiny.", author:"C.S. Lewis"},
+      {text:"Believe you can and you're halfway there.", author:"Theodore Roosevelt"},
+      {text:"Discipline is choosing between what you want now and what you want most.", author:"Abraham Lincoln"},
+      {text:"You are never too old to set another goal or dream a new dream.", author:"C.S. Lewis"},
+      {text:"Our greatest glory is not in never falling, but in rising every time we fall.", author:"Confucius"},
+      {text:"The future depends on what you do today.", author:"Mahatma Gandhi"},
+      {text:"I am not a product of my circumstances. I am a product of my decisions.", author:"Stephen Covey"},
+      {text:"Strength does not come from winning. Your struggles develop your strengths.", author:"Arnold Schwarzenegger"},
+      {text:"Every strike brings me closer to the next home run.", author:"Babe Ruth"},
+      {text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius"},
+      {text:"Perseverance is not a long race; it is many short races one after another.", author:"Walter Elliot"},
+      {text:"Fall seven times, stand up eight.", author:"Japanese Proverb"},
+      {text:"You don't have to be great to start, but you have to start to be great.", author:"Zig Ziglar"},
+      {text:"A year from now you may wish you had started today.", author:"Karen Lamb"},
+      {text:"The comeback is always stronger than the setback.", author:""},
+      {text:"Small steps every day lead to big changes.", author:""},
+      {text:"Recovery is not one and done, it's a lifelong journey taken one day at a time.", author:""},
+      {text:"Difficult roads often lead to beautiful destinations.", author:""},
+      {text:"You are stronger than your excuses.", author:""}
+    ],
+    tr: [
+      {text:"Damlaya damlaya göl olur.", author:"Atasözü"},
+      {text:"Bin millik yolculuk tek bir adımla başlar.", author:"Lao Tzu"},
+      {text:"Düşmek ayıp değil, kalkmamak ayıptır.", author:"Atasözü"},
+      {text:"Bugün yaptıkların, yarınını belirler.", author:""},
+      {text:"Yavaş gitmekten korkma, yerinde saymaktan kork.", author:"Çin Atasözü"},
+      {text:"Yedi kez düş, sekiz kez kalk.", author:"Japon Atasözü"},
+      {text:"Zorlu yollar çoğu zaman güzel yerlere çıkar.", author:""},
+      {text:"Sen bahanelerinden daha güçlüsün.", author:""},
+      {text:"Bir yıl sonra, bugün başlamış olmayı dileyeceksin.", author:"Karen Lamb"},
+      {text:"Küçük adımlar her gün, büyük değişimlere yol açar.", author:""},
+      {text:"Geri dönüş, düşüşten her zaman daha güçlüdür.", author:""},
+      {text:"İyileşme bir seferde olmaz; her gün yeniden seçilir.", author:""},
+      {text:"Vazgeçmediğin sürece kaybetmedin.", author:""},
+      {text:"Disiplin, şimdi istediğinle en çok istediğin arasında seçim yapmaktır.", author:""},
+      {text:"Dün geçti, yarın belirsiz; elinde olan bugün.", author:""},
+      {text:"Sabır acıdır, meyvesi tatlıdır.", author:"Atasözü"},
+      {text:"İçindeki güç, karşındaki engelden daha büyüktür.", author:""},
+      {text:"Her sabah yeni bir başlangıçtır.", author:""},
+      {text:"Ne kadar yavaş gittiğin önemli değil, yeter ki durma.", author:"Konfüçyüs"},
+      {text:"En karanlık gece bile sona erer ve güneş yeniden doğar.", author:"Victor Hugo"}
+    ]
+  };
+
+  /* ================= State ================= */
   var cards = [];
+  var settings = {theme:'auto', lang:'en', currency:'$'};
   var editingId = null;
-  var selectedColor = COLORS[0].value;
+  var selectedColor = COLORS[0].key;
   var selectedIcon = ICONS[0];
   var relapseTargetId = null;
   var menuTargetId = null;
   var deleteTargetId = null;
+  var statsTargetId = null;
   var toastTimeout = null;
- 
-  /* ---------- Storage ---------- */
+  var mediaDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var reducedMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
+
+  function t(key, params){
+    var dict = I18N[settings.lang] || I18N.en;
+    var s = dict[key] != null ? dict[key] : (I18N.en[key] != null ? I18N.en[key] : key);
+    if(params){
+      Object.keys(params).forEach(function(k){
+        s = s.split('{'+k+'}').join(params[k]);
+      });
+    }
+    return s;
+  }
+
+  /* ================= Storage ================= */
+  function loadSettings(){
+    try{
+      var raw = localStorage.getItem(SETTINGS_KEY);
+      if(raw){ settings = Object.assign(settings, JSON.parse(raw)); return; }
+    }catch(e){}
+    /* first run: auto-detect */
+    var nav = (navigator.language || 'en').toLowerCase();
+    if(nav.indexOf('tr') === 0){ settings.lang = 'tr'; settings.currency = '₺'; }
+  }
+  function saveSettings(){
+    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }catch(e){}
+  }
   function loadCards(){
     try{
       var raw = localStorage.getItem(STORAGE_KEY);
       cards = raw ? JSON.parse(raw) : [];
     }catch(e){ cards = []; }
+    if(!Array.isArray(cards)) cards = [];
+    cards.forEach(migrateCard);
+  }
+  function migrateCard(c){
+    if(LEGACY_COLOR_MAP[c.color]) c.color = LEGACY_COLOR_MAP[c.color];
+    var valid = COLORS.some(function(x){ return x.key === c.color; });
+    if(!valid) c.color = COLORS[0].key;
+    if(!Array.isArray(c.notifiedMilestones)) c.notifiedMilestones = [];
+    if(!Array.isArray(c.relapses)) c.relapses = [];
+    if(typeof c.bestStreakSeconds !== 'number') c.bestStreakSeconds = 0;
+    if(typeof c.costPerDay !== 'number') c.costPerDay = 0;
   }
   function saveCards(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(cards)); }catch(e){}
   }
- 
-  /* ---------- Helpers ---------- */
-  function uid(){
-    return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-  }
+
+  /* ================= Helpers ================= */
+  function uid(){ return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
   function pad(n){ return n.toString().padStart(2,'0'); }
   function escapeHtml(str){
     var d = document.createElement('div');
@@ -763,33 +866,119 @@
       seconds: total%60
     };
   }
+  function locale(){ return settings.lang === 'tr' ? 'tr-TR' : 'en-US'; }
   function formatDate(iso){
     var d = new Date(iso);
-    return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    return d.toLocaleDateString(locale(), {month:'short', day:'numeric', year:'numeric'});
   }
   function toDatetimeLocalValue(d){
     return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
   }
- 
-  /* ---------- Toast ---------- */
-  function showToast(msg){
-    var t = document.getElementById('toast');
-    if(!t){
-      t = document.createElement('div');
-      t.id = 'toast';
-      t.className = 'toast';
-      document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    requestAnimationFrame(function(){ t.classList.add('show'); });
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+  function formatMoney(amount){
+    var n = new Intl.NumberFormat(locale(), {maximumFractionDigits: amount < 100 ? 1 : 0}).format(amount);
+    return settings.currency + n;
   }
- 
-  /* ---------- Notifications ---------- */
+  function formatDurationShort(totalSeconds){
+    var d = Math.floor(totalSeconds/86400);
+    var h = Math.floor((totalSeconds%86400)/3600);
+    var m = Math.floor((totalSeconds%3600)/60);
+    if(d > 0) return d + t('dayShort') + (h > 0 ? ' ' + h + t('hourShort') : '');
+    if(h > 0) return h + t('hourShort') + (m > 0 ? ' ' + m + t('minShort') : '');
+    return Math.max(m,1) + t('minShort');
+  }
+  function milestoneProgress(total){
+    var prev = 0;
+    for(var i = 0; i < MILESTONES.length; i++){
+      if(total < MILESTONES[i].seconds){
+        return {
+          done: false,
+          label: t(MILESTONES[i].key),
+          pct: Math.max(0, Math.min(1, (total - prev) / (MILESTONES[i].seconds - prev))),
+          remaining: MILESTONES[i].seconds - total
+        };
+      }
+      prev = MILESTONES[i].seconds;
+    }
+    return {done: true, pct: 1};
+  }
+
+  /* ================= Theme ================= */
+  function effectiveTheme(){
+    if(settings.theme === 'auto'){
+      return (mediaDark && mediaDark.matches) ? 'dark' : 'light';
+    }
+    return settings.theme;
+  }
+  function applyTheme(){
+    var th = effectiveTheme();
+    document.documentElement.setAttribute('data-theme', th);
+    var meta = document.getElementById('themeColorMeta');
+    if(meta) meta.setAttribute('content', th === 'dark' ? '#111815' : '#F4F6F2');
+    updateSeg('themeSeg', 'data-theme-opt', settings.theme);
+  }
+  if(mediaDark){
+    var onSchemeChange = function(){ if(settings.theme === 'auto') applyTheme(); };
+    if(mediaDark.addEventListener) mediaDark.addEventListener('change', onSchemeChange);
+    else if(mediaDark.addListener) mediaDark.addListener(onSchemeChange);
+  }
+
+  /* ================= Language ================= */
+  function applyLanguage(){
+    document.documentElement.lang = settings.lang;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.getElementById('emptyTitle').innerHTML = t('emptyTitle');
+    document.getElementById('cardNameInput').placeholder = t('quittingPlaceholder');
+    document.getElementById('summaryLabel').textContent = t('summaryLabel');
+    updateSeg('langSeg', 'data-lang-opt', settings.lang);
+    renderQuote();
+    renderCards();
+  }
+
+  /* ================= Segmented controls ================= */
+  function updateSeg(segId, attr, value){
+    document.querySelectorAll('#'+segId+' button').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute(attr) === value);
+    });
+  }
+
+  /* ================= Toast ================= */
+  function showToast(msg){
+    var el = document.getElementById('toast');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'toast';
+      el.className = 'toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    requestAnimationFrame(function(){ el.classList.add('show'); });
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  }
+
+  /* ================= Confetti ================= */
+  function celebrate(){
+    if(reducedMotion) return;
+    var colors = ['#3E8168','#F2B33D','#E28FA5','#7FA8E0','#B79FE0','#E8A06B'];
+    for(var i = 0; i < 26; i++){
+      var p = document.createElement('div');
+      p.className = 'confetti';
+      p.style.left = (Math.random()*100) + 'vw';
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.animationDuration = (1.9 + Math.random()*1.4) + 's';
+      p.style.animationDelay = (Math.random()*0.5) + 's';
+      p.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+      document.body.appendChild(p);
+      (function(node){ setTimeout(function(){ node.remove(); }, 4200); })(p);
+    }
+  }
+
+  /* ================= Notifications ================= */
   function sendMilestoneNotification(title, body){
     if('Notification' in window && Notification.permission === 'granted'){
-      try{ new Notification(title, {body: body}); }catch(e){ /* ignore */ }
+      try{ new Notification(title, {body: body}); }catch(e){}
     }
     showToast(body);
   }
@@ -803,44 +992,73 @@
       banner.classList.add('hidden');
     }
   }
- 
-  /* ---------- Quote of the day ---------- */
-  function pickQuoteOfDay(){
-    var start = new Date(new Date().getFullYear(), 0, 0);
-    var diff = Date.now() - start.getTime();
-    var dayOfYear = Math.floor(diff/86400000);
-    return QUOTES[dayOfYear % QUOTES.length];
-  }
+
+  /* ================= Quote of the day ================= */
   function renderQuote(){
-    var q = pickQuoteOfDay();
+    var list = QUOTES[settings.lang] || QUOTES.en;
+    var start = new Date(new Date().getFullYear(), 0, 0);
+    var dayOfYear = Math.floor((Date.now() - start.getTime())/86400000);
+    var q = list[dayOfYear % list.length];
     document.getElementById('quoteText').textContent = '\u201C' + q.text + '\u201D';
-    document.getElementById('quoteAuthor').textContent = '\u2014 ' + q.author;
+    document.getElementById('quoteAuthor').textContent = q.author ? '\u2014 ' + q.author : '';
   }
- 
-  /* ---------- Rendering ---------- */
+
+  /* ================= Rendering ================= */
   function cardTemplate(c){
     var el = computeElapsed(c.startTime);
+    var prog = milestoneProgress(el.total);
+    var progressHtml;
+    if(prog.done){
+      progressHtml =
+        '<div class="card-progress">' +
+          '<div class="progress-track"><div class="progress-fill" id="pf-'+c.id+'" style="width:100%"></div></div>' +
+          '<div class="progress-caption"><span id="pl-'+c.id+'">'+t('allMilestones')+'</span><span id="pr-'+c.id+'"></span></div>' +
+        '</div>';
+    } else {
+      progressHtml =
+        '<div class="card-progress">' +
+          '<div class="progress-track"><div class="progress-fill" id="pf-'+c.id+'" style="width:'+(prog.pct*100).toFixed(1)+'%"></div></div>' +
+          '<div class="progress-caption">' +
+            '<span id="pl-'+c.id+'">'+t('next',{label:prog.label})+'</span>' +
+            '<span id="pr-'+c.id+'">'+t('left',{time:formatDurationShort(prog.remaining)})+'</span>' +
+          '</div>' +
+        '</div>';
+    }
+    var badges = '';
+    var bestShown = Math.max(c.bestStreakSeconds || 0, el.total);
+    if((c.relapses && c.relapses.length > 0) || c.costPerDay > 0){
+      badges = '<div class="card-badges">';
+      if(c.costPerDay > 0){
+        badges += '<span class="card-badge" id="sv-'+c.id+'">💰 '+formatMoney(c.costPerDay*el.total/86400)+' <span class="soft">'+t('savedChip')+'</span></span>';
+      }
+      if(c.relapses && c.relapses.length > 0){
+        badges += '<span class="card-badge">🏆 <span id="bs-'+c.id+'">'+formatDurationShort(bestShown)+'</span> <span class="soft">'+t('bestChip')+'</span></span>';
+      }
+      badges += '</div>';
+    }
     return '' +
-      '<div class="tracker-card" id="card-'+c.id+'" style="background:'+c.color+'">' +
+      '<div class="tracker-card" id="card-'+c.id+'" style="background:var(--c-'+c.color+')">' +
         '<div class="card-top">' +
           '<div class="card-title-wrap">' +
             '<div class="card-icon">'+c.icon+'</div>' +
             '<div class="card-text">' +
               '<p class="card-name">'+escapeHtml(c.name)+'</p>' +
-              '<p class="card-since">Since '+formatDate(c.startTime)+'</p>' +
+              '<p class="card-since">'+t('since',{date:formatDate(c.startTime)})+'</p>' +
             '</div>' +
           '</div>' +
           '<button class="kebab-btn" aria-label="Options" data-id="'+c.id+'">\u22EE</button>' +
         '</div>' +
         '<div class="stats-row">' +
-          '<div class="stat-box"><span class="stat-num" id="d-'+c.id+'">'+el.days+'</span><span class="stat-label">Days</span></div>' +
-          '<div class="stat-box"><span class="stat-num" id="h-'+c.id+'">'+pad(el.hours)+'</span><span class="stat-label">Hours</span></div>' +
-          '<div class="stat-box"><span class="stat-num" id="m-'+c.id+'">'+pad(el.minutes)+'</span><span class="stat-label">Min</span></div>' +
-          '<div class="stat-box"><span class="stat-num" id="s-'+c.id+'">'+pad(el.seconds)+'</span><span class="stat-label">Sec</span></div>' +
+          '<div class="stat-box"><span class="stat-num" id="d-'+c.id+'">'+el.days+'</span><span class="stat-label">'+t('days')+'</span></div>' +
+          '<div class="stat-box"><span class="stat-num" id="h-'+c.id+'">'+pad(el.hours)+'</span><span class="stat-label">'+t('hours')+'</span></div>' +
+          '<div class="stat-box"><span class="stat-num" id="m-'+c.id+'">'+pad(el.minutes)+'</span><span class="stat-label">'+t('min')+'</span></div>' +
+          '<div class="stat-box"><span class="stat-num" id="s-'+c.id+'">'+pad(el.seconds)+'</span><span class="stat-label">'+t('sec')+'</span></div>' +
         '</div>' +
+        progressHtml +
+        badges +
       '</div>';
   }
- 
+
   function renderCards(){
     var container = document.getElementById('cardsContainer');
     var empty = document.getElementById('emptyState');
@@ -848,12 +1066,13 @@
       container.classList.add('hidden');
       container.innerHTML = '';
       empty.classList.remove('hidden');
+      updateSummary();
       return;
     }
     empty.classList.add('hidden');
     container.classList.remove('hidden');
     container.innerHTML = cards.map(cardTemplate).join('');
- 
+
     cards.forEach(function(c){
       var cardEl = document.getElementById('card-'+c.id);
       if(!cardEl) return;
@@ -868,8 +1087,18 @@
         openCardMenu(btn.dataset.id);
       });
     });
+    updateSummary();
   }
- 
+
+  function updateSummary(){
+    var strip = document.getElementById('summaryStrip');
+    if(cards.length < 2){ strip.classList.add('hidden'); return; }
+    var totalDays = 0;
+    cards.forEach(function(c){ totalDays += computeElapsed(c.startTime).days; });
+    document.getElementById('summaryDays').textContent = totalDays;
+    strip.classList.remove('hidden');
+  }
+
   function tick(){
     cards.forEach(function(c){
       var el = computeElapsed(c.startTime);
@@ -879,35 +1108,59 @@
         document.getElementById('h-'+c.id).textContent = pad(el.hours);
         document.getElementById('m-'+c.id).textContent = pad(el.minutes);
         document.getElementById('s-'+c.id).textContent = pad(el.seconds);
+        var pf = document.getElementById('pf-'+c.id);
+        var pl = document.getElementById('pl-'+c.id);
+        var pr = document.getElementById('pr-'+c.id);
+        if(pf && pl && pr){
+          var prog = milestoneProgress(el.total);
+          if(prog.done){
+            pf.style.width = '100%';
+            pl.textContent = t('allMilestones');
+            pr.textContent = '';
+          } else {
+            pf.style.width = (prog.pct*100).toFixed(1) + '%';
+            pl.textContent = t('next',{label:prog.label});
+            pr.textContent = t('left',{time:formatDurationShort(prog.remaining)});
+          }
+        }
+        var sv = document.getElementById('sv-'+c.id);
+        if(sv && c.costPerDay > 0){
+          sv.innerHTML = '💰 ' + formatMoney(c.costPerDay*el.total/86400) + ' <span class="soft">'+t('savedChip')+'</span>';
+        }
+        var bs = document.getElementById('bs-'+c.id);
+        if(bs){
+          bs.textContent = formatDurationShort(Math.max(c.bestStreakSeconds || 0, el.total));
+        }
       }
       checkMilestones(c, el.total);
     });
+    var strip = document.getElementById('summaryStrip');
+    if(!strip.classList.contains('hidden')) updateSummary();
   }
- 
+
   function checkMilestones(card, totalSeconds){
     if(!card.notifiedMilestones) card.notifiedMilestones = [];
     var newly = [];
     MILESTONES.forEach(function(m){
       if(totalSeconds >= m.seconds && card.notifiedMilestones.indexOf(m.seconds) === -1){
         card.notifiedMilestones.push(m.seconds);
-        newly.push(m.label);
+        newly.push(t(m.key));
       }
     });
     if(newly.length > 0){
       saveCards();
-      var body = newly.length === 1
-        ? 'You reached ' + newly[0] + ' without ' + card.name + '. Keep going!'
-        : 'You reached ' + newly.join(', ') + ' without ' + card.name + '. Amazing progress!';
-      sendMilestoneNotification('\uD83C\uDF89 ' + card.name + ' milestone!', body);
+      var body = t('milestoneBody', {label: newly.join(', '), name: card.name});
+      sendMilestoneNotification(t('milestoneTitle', {name: card.name}), body);
+      celebrate();
     }
   }
- 
-  /* ---------- Add / Edit modal ---------- */
+
+  /* ================= Add / Edit modal ================= */
   function renderSwatches(){
     var wrap = document.getElementById('colorSwatches');
     wrap.innerHTML = COLORS.map(function(c){
-      var sel = c.value === selectedColor ? ' selected' : '';
-      return '<div class="swatch'+sel+'" data-color="'+c.value+'" style="background:'+c.value+'" title="'+c.name+'">'+(c.value===selectedColor?'\u2713':'')+'</div>';
+      var sel = c.key === selectedColor ? ' selected' : '';
+      return '<div class="swatch'+sel+'" data-color="'+c.key+'" style="background:var(--c-'+c.key+')">'+(c.key===selectedColor?'\u2713':'')+'</div>';
     }).join('');
     wrap.querySelectorAll('.swatch').forEach(function(s){
       s.addEventListener('click', function(){
@@ -931,12 +1184,13 @@
   }
   function openAddModal(cardToEdit){
     editingId = cardToEdit ? cardToEdit.id : null;
-    document.getElementById('modalTitle').textContent = cardToEdit ? 'Edit Tracker' : 'New Tracker';
+    document.getElementById('modalTitle').textContent = cardToEdit ? t('editTracker') : t('newTracker');
     document.getElementById('cardNameInput').value = cardToEdit ? cardToEdit.name : '';
+    document.getElementById('cardCostInput').value = (cardToEdit && cardToEdit.costPerDay > 0) ? cardToEdit.costPerDay : '';
     var dt = cardToEdit ? new Date(cardToEdit.startTime) : new Date();
     document.getElementById('cardDateInput').value = toDatetimeLocalValue(dt);
     document.getElementById('cardDateInput').max = toDatetimeLocalValue(new Date());
-    selectedColor = cardToEdit ? cardToEdit.color : COLORS[0].value;
+    selectedColor = cardToEdit ? cardToEdit.color : COLORS[0].key;
     selectedIcon = cardToEdit ? cardToEdit.icon : ICONS[0];
     renderSwatches();
     renderIcons();
@@ -950,12 +1204,15 @@
   function handleSaveCard(){
     var name = document.getElementById('cardNameInput').value.trim();
     var dateVal = document.getElementById('cardDateInput').value;
-    if(!name){ showToast('Please enter a name'); return; }
-    if(!dateVal){ showToast('Please choose a date & time'); return; }
+    var cost = parseFloat(document.getElementById('cardCostInput').value);
+    if(isNaN(cost) || cost < 0) cost = 0;
+    if(!name){ showToast(t('toastEnterName')); return; }
+    if(!dateVal){ showToast(t('toastChooseDate')); return; }
     var startTime = new Date(dateVal).toISOString();
     var elapsedTotal = computeElapsed(startTime).total;
     var alreadyPassed = MILESTONES.filter(function(m){ return elapsedTotal >= m.seconds; }).map(function(m){ return m.seconds; });
- 
+    var wasEditing = !!editingId;
+
     if(editingId){
       var card = cards.find(function(c){ return c.id === editingId; });
       if(card){
@@ -963,6 +1220,7 @@
         card.color = selectedColor;
         card.icon = selectedIcon;
         card.startTime = startTime;
+        card.costPerDay = cost;
         card.notifiedMilestones = alreadyPassed;
       }
     } else {
@@ -972,21 +1230,25 @@
         color: selectedColor,
         icon: selectedIcon,
         startTime: startTime,
-        notifiedMilestones: alreadyPassed
+        costPerDay: cost,
+        notifiedMilestones: alreadyPassed,
+        relapses: [],
+        bestStreakSeconds: 0
       });
     }
     saveCards();
     renderCards();
     closeAddModal();
-    showToast(editingId ? 'Tracker updated' : 'New tracker added \u2014 you can do this');
+    showToast(wasEditing ? t('toastUpdated') : t('toastAdded'));
   }
- 
-  /* ---------- Relapse modal ---------- */
+
+  /* ================= Relapse check-in ================= */
   function openRelapseModal(id){
     relapseTargetId = id;
     var card = cards.find(function(c){ return c.id === id; });
     if(!card) return;
-    document.getElementById('relapseCardName').textContent = card.name;
+    document.getElementById('relapseQuestion').innerHTML =
+      t('didYouUse', {name:'<span class="card-name-highlight">'+escapeHtml(card.name)+'</span>'});
     document.getElementById('relapseModal').classList.remove('hidden');
   }
   function closeRelapseModal(){
@@ -996,16 +1258,20 @@
   function handleRelapseAnswer(didRelapse){
     var card = cards.find(function(c){ return c.id === relapseTargetId; });
     if(didRelapse && card){
+      var streak = computeElapsed(card.startTime).total;
+      if(streak > (card.bestStreakSeconds || 0)) card.bestStreakSeconds = streak;
+      if(!Array.isArray(card.relapses)) card.relapses = [];
+      card.relapses.push(new Date().toISOString());
       card.startTime = new Date().toISOString();
       card.notifiedMilestones = [];
       saveCards();
       renderCards();
-      showToast("It's okay \u2014 recovery isn't a straight line. Fresh start, right now.");
+      showToast(t('toastFreshStart'));
     }
     closeRelapseModal();
   }
- 
-  /* ---------- Card options sheet ---------- */
+
+  /* ================= Card options sheet ================= */
   function openCardMenu(id){
     menuTargetId = id;
     document.getElementById('cardMenuSheetOverlay').classList.remove('hidden');
@@ -1014,23 +1280,42 @@
     document.getElementById('cardMenuSheetOverlay').classList.add('hidden');
     menuTargetId = null;
   }
-  function handleEditFromMenu(){
-    var card = cards.find(function(c){ return c.id === menuTargetId; });
-    closeCardMenu();
-    if(card) openAddModal(card);
+
+  /* ================= Stats modal ================= */
+  function openStatsModal(id){
+    var card = cards.find(function(c){ return c.id === id; });
+    if(!card) return;
+    statsTargetId = id;
+    var el = computeElapsed(card.startTime);
+    document.getElementById('statsTitle').textContent = card.icon + ' ' + card.name;
+    document.getElementById('statCurrent').textContent = formatDurationShort(el.total);
+    document.getElementById('statBest').textContent = formatDurationShort(Math.max(card.bestStreakSeconds || 0, el.total));
+    document.getElementById('statRelapses').textContent = (card.relapses || []).length;
+    var savedRow = document.getElementById('statSavedRow');
+    if(card.costPerDay > 0){
+      savedRow.classList.remove('hidden');
+      document.getElementById('statSaved').textContent = formatMoney(card.costPerDay*el.total/86400);
+    } else {
+      savedRow.classList.add('hidden');
+    }
+    document.getElementById('statMilestones').innerHTML = MILESTONES.map(function(m){
+      var done = el.total >= m.seconds;
+      return '<span class="mstone'+(done?' done':'')+'">'+(done?'✓ ':'')+t(m.key)+'</span>';
+    }).join('');
+    document.getElementById('statsModal').classList.remove('hidden');
   }
-  function handleDeleteFromMenu(){
-    var id = menuTargetId;
-    closeCardMenu();
-    openDeleteConfirm(id);
+  function closeStatsModal(){
+    document.getElementById('statsModal').classList.add('hidden');
+    statsTargetId = null;
   }
- 
-  /* ---------- Delete confirm modal ---------- */
+
+  /* ================= Delete confirm ================= */
   function openDeleteConfirm(id){
     var card = cards.find(function(c){ return c.id === id; });
     if(!card) return;
     deleteTargetId = id;
-    document.getElementById('deleteCardName').textContent = card.name;
+    document.getElementById('deleteMsg').innerHTML =
+      t('deleteMsg', {name:'<span class="card-name-highlight">'+escapeHtml(card.name)+'</span>'});
     document.getElementById('deleteConfirmModal').classList.remove('hidden');
   }
   function closeDeleteConfirm(){
@@ -1044,37 +1329,154 @@
     cards = cards.filter(function(c){ return c.id !== card.id; });
     saveCards();
     renderCards();
-    showToast('Tracker deleted');
+    showToast(t('toastDeleted'));
   }
- 
-  /* ---------- Event binding ---------- */
+
+  /* ================= Settings sheet ================= */
+  function openSettings(){
+    updateSeg('themeSeg', 'data-theme-opt', settings.theme);
+    updateSeg('langSeg', 'data-lang-opt', settings.lang);
+    updateSeg('currencySeg', 'data-cur-opt', settings.currency);
+    document.getElementById('settingsSheetOverlay').classList.remove('hidden');
+  }
+  function closeSettings(){
+    document.getElementById('settingsSheetOverlay').classList.add('hidden');
+  }
+
+  /* ================= Export / Import ================= */
+  function exportData(){
+    var payload = {app:'quittify', version:2, exportedAt:new Date().toISOString(), settings:settings, cards:cards};
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'quittify-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    showToast(t('toastExported'));
+  }
+  function importData(file){
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var data = JSON.parse(reader.result);
+        var imported = Array.isArray(data) ? data : data.cards; /* accept v1 raw arrays too */
+        if(!Array.isArray(imported)) throw new Error('bad');
+        imported.forEach(migrateCard);
+        cards = imported;
+        if(data.settings && typeof data.settings === 'object'){
+          settings = Object.assign(settings, data.settings);
+          saveSettings();
+          applyTheme();
+          applyLanguage();
+        }
+        saveCards();
+        renderCards();
+        closeSettings();
+        showToast(t('toastImported'));
+      }catch(e){
+        showToast(t('toastImportError'));
+      }
+    };
+    reader.onerror = function(){ showToast(t('toastImportError')); };
+    reader.readAsText(file);
+  }
+
+  /* ================= Reset all ================= */
+  function handleResetAll(){
+    cards = [];
+    saveCards();
+    localStorage.removeItem(DISMISS_KEY);
+    renderCards();
+    maybeShowNotifBanner();
+    document.getElementById('resetConfirmModal').classList.add('hidden');
+    closeSettings();
+    showToast(t('toastErased'));
+  }
+
+  /* ================= Event binding ================= */
+  function overlayClose(id, closer){
+    document.getElementById(id).addEventListener('click', function(e){
+      if(e.target.id === id) closer();
+    });
+  }
   function bindEvents(){
     document.getElementById('addCardBtn').addEventListener('click', function(){ openAddModal(null); });
     document.getElementById('cancelCardBtn').addEventListener('click', closeAddModal);
     document.getElementById('saveCardBtn').addEventListener('click', handleSaveCard);
-    document.getElementById('cardModal').addEventListener('click', function(e){
-      if(e.target.id === 'cardModal') closeAddModal();
-    });
- 
+    overlayClose('cardModal', closeAddModal);
+
     document.getElementById('relapseNoBtn').addEventListener('click', function(){ handleRelapseAnswer(false); });
     document.getElementById('relapseYesBtn').addEventListener('click', function(){ handleRelapseAnswer(true); });
-    document.getElementById('relapseModal').addEventListener('click', function(e){
-      if(e.target.id === 'relapseModal') closeRelapseModal();
+    overlayClose('relapseModal', closeRelapseModal);
+
+    document.getElementById('statsCardBtn').addEventListener('click', function(){
+      var id = menuTargetId; closeCardMenu(); openStatsModal(id);
     });
- 
-    document.getElementById('editCardBtn').addEventListener('click', handleEditFromMenu);
-    document.getElementById('deleteCardBtn').addEventListener('click', handleDeleteFromMenu);
+    document.getElementById('editCardBtn').addEventListener('click', function(){
+      var card = cards.find(function(c){ return c.id === menuTargetId; });
+      closeCardMenu();
+      if(card) openAddModal(card);
+    });
+    document.getElementById('deleteCardBtn').addEventListener('click', function(){
+      var id = menuTargetId; closeCardMenu(); openDeleteConfirm(id);
+    });
     document.getElementById('cancelMenuBtn').addEventListener('click', closeCardMenu);
-    document.getElementById('cardMenuSheetOverlay').addEventListener('click', function(e){
-      if(e.target.id === 'cardMenuSheetOverlay') closeCardMenu();
-    });
- 
+    overlayClose('cardMenuSheetOverlay', closeCardMenu);
+
+    document.getElementById('statsCloseBtn').addEventListener('click', closeStatsModal);
+    overlayClose('statsModal', closeStatsModal);
+
     document.getElementById('deleteCancelBtn').addEventListener('click', closeDeleteConfirm);
     document.getElementById('deleteConfirmBtn').addEventListener('click', handleConfirmDelete);
-    document.getElementById('deleteConfirmModal').addEventListener('click', function(e){
-      if(e.target.id === 'deleteConfirmModal') closeDeleteConfirm();
+    overlayClose('deleteConfirmModal', closeDeleteConfirm);
+
+    /* Settings */
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+    overlayClose('settingsSheetOverlay', closeSettings);
+
+    document.querySelectorAll('#themeSeg button').forEach(function(b){
+      b.addEventListener('click', function(){
+        settings.theme = b.getAttribute('data-theme-opt');
+        saveSettings(); applyTheme();
+      });
     });
- 
+    document.querySelectorAll('#langSeg button').forEach(function(b){
+      b.addEventListener('click', function(){
+        settings.lang = b.getAttribute('data-lang-opt');
+        saveSettings(); applyLanguage();
+      });
+    });
+    document.querySelectorAll('#currencySeg button').forEach(function(b){
+      b.addEventListener('click', function(){
+        settings.currency = b.getAttribute('data-cur-opt');
+        saveSettings();
+        updateSeg('currencySeg', 'data-cur-opt', settings.currency);
+        renderCards();
+      });
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    document.getElementById('importBtn').addEventListener('click', function(){
+      document.getElementById('importFileInput').click();
+    });
+    document.getElementById('importFileInput').addEventListener('change', function(e){
+      if(e.target.files && e.target.files[0]) importData(e.target.files[0]);
+      e.target.value = '';
+    });
+    document.getElementById('resetAllBtn').addEventListener('click', function(){
+      document.getElementById('resetConfirmModal').classList.remove('hidden');
+    });
+    document.getElementById('resetCancelBtn').addEventListener('click', function(){
+      document.getElementById('resetConfirmModal').classList.add('hidden');
+    });
+    document.getElementById('resetConfirmBtn').addEventListener('click', handleResetAll);
+    overlayClose('resetConfirmModal', function(){
+      document.getElementById('resetConfirmModal').classList.add('hidden');
+    });
+
+    /* Notifications */
     document.getElementById('enableNotifBtn').addEventListener('click', function(){
       Notification.requestPermission().then(function(){ maybeShowNotifBanner(); });
     });
@@ -1083,24 +1485,25 @@
       maybeShowNotifBanner();
     });
     document.getElementById('headerNotifBtn').addEventListener('click', function(){
-      if(!('Notification' in window)){ showToast('Notifications are not supported here'); return; }
-      if(Notification.permission === 'granted'){ showToast('Notifications are already on'); return; }
-      if(Notification.permission === 'denied'){ showToast('Notifications are blocked in your browser settings'); return; }
+      if(!('Notification' in window)){ showToast(t('toastNotifUnsupported')); return; }
+      if(Notification.permission === 'granted'){ showToast(t('toastNotifOn')); return; }
+      if(Notification.permission === 'denied'){ showToast(t('toastNotifBlocked')); return; }
       Notification.requestPermission().then(function(){ maybeShowNotifBanner(); });
     });
   }
- 
-  /* ---------- Init ---------- */
+
+  /* ================= Init ================= */
   function init(){
+    loadSettings();
+    applyTheme();
     loadCards();
-    renderCards();
-    renderQuote();
     bindEvents();
+    applyLanguage(); /* also renders quote + cards */
     maybeShowNotifBanner();
     tick();
     setInterval(tick, 1000);
   }
- 
+
   document.addEventListener('DOMContentLoaded', init);
 })();
 </script>
