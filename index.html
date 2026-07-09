@@ -88,15 +88,20 @@ button,input,select{font-family:inherit;}
 .hidden{display:none !important;}
 
 #app{
-  max-width:460px;
+  width:100%;
   margin:0 auto;
   min-height:100vh;
   position:relative;
   padding-bottom:120px;
-  width:100%;
 }
-@media (max-width: 480px){
-  #app{ max-width:100%; }
+@media (min-width: 600px){
+  #app{ max-width:460px; }
+}
+.fab-wrap{
+  max-width:none;
+}
+@media (min-width: 600px){
+  .fab-wrap{ max-width:460px; }
 }
 
 /* ============ Header ============ */
